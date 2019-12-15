@@ -7,4 +7,6 @@
     <string name="verification_code">Verification Code</string>
     <string name="send_verification_code">Send Verification Code</string>
     <string name="logout">Logout</string>
+    <string name="find_users">Find Users</string>
+    <string name="name">Name</string>
 </resources>
