@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">WhatsClone</string>
     <string name="action_settings">Settings</string>
+    <string name="verify_your_number">Verify your number</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="welcome_to_whatsclone">Welcome to WhatsClone!</string>
+    <string name="verification_code">Verification Code</string>
+    <string name="send_verification_code">Send Verification Code</string>
+    <string name="logout">Logout</string>
 </resources>
