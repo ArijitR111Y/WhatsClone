@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "156519800634",
+    "firebase_url": "https://whatsclone-61d5c.firebaseio.com",
+    "project_id": "whatsclone-61d5c",
+    "storage_bucket": "whatsclone-61d5c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:156519800634:android:323027de19627189a4fa03",
+        "android_client_info": {
+          "package_name": "com.royarijit998.whatsclone"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "156519800634-k5l1ubfoojmg6bkhjqsikdqjukmdhise.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.royarijit998.whatsclone",
+            "certificate_hash": "af3bd8816f312236a4528ebae3ebbcead94ca162"
+          }
+        },
+        {
+          "client_id": "156519800634-pirfue04rg4o8146uftl71a71e1kf5g3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwxEZEGfX4Qj56ZY7IQy-4-3gjTAwKh6E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "156519800634-pirfue04rg4o8146uftl71a71e1kf5g3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
