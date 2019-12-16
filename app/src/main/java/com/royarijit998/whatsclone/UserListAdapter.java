@@ -27,7 +27,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserVi
 
     @Override
     public int getItemCount() {
-        return 0;
+        return userArrayList.size();
     }
 
     @Override

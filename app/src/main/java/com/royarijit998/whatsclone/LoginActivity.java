@@ -19,15 +19,22 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
-public class MainActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
     private EditText phoneEditText, verifyCodeEditText;
     private Button verifyBtn;
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks callbacks;
     private String verificationId;
+    private final String ISO = "+91";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FirebaseApp.initializeApp(MainActivity.this);
+        FirebaseApp.initializeApp(LoginActivity.this);
 
         if(isUserLoggedIn())
             startHomeActivity();
@@ -48,6 +55,9 @@ public class MainActivity extends AppCompatActivity {
         verifyBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(phoneEditText.getText().toString().charAt(0) != '+')
+                    phoneEditText.setText(ISO + phoneEditText.getText().toString());
+
                 if(verificationId == null){
                     startPhoneNumberVerification();
                 }else {
@@ -86,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
                 phoneEditText.getText().toString(),
                 60,
                 TimeUnit.SECONDS,
-                MainActivity.this,
+                LoginActivity.this,
                 callbacks
         );
     }
@@ -117,9 +127,29 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful() && isUserLoggedIn()){
+                    final DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getUid());
+                    dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            // If data corresponding to the current users UID exists in the document, then we directly switch to the HomeActivity
+                            if(!dataSnapshot.exists()){
+                                HashMap<String, String> map = new HashMap<>();
+                                map.put("name", (new StringBuffer("User")).append(FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber()).toString());
+                                map.put("phone", FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber());
+                                dbRef.setValue(map);
+                            }
+                            startHomeActivity();
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
                     startHomeActivity();
                 }else if(!task.isSuccessful()){
-                    Toast.makeText(MainActivity.this, "Failed to Authorize Phone Number", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "Failed to Authorize Phone Number", Toast.LENGTH_SHORT).show();
                 }
             }
         });
