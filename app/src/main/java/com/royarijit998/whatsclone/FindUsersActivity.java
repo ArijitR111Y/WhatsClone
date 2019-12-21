@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 public class FindUsersActivity extends AppCompatActivity {
-    private static final String TAG = "FindUsersActivity";
 
     private RecyclerView userList;
     private RecyclerView.Adapter userListAdapter;
@@ -66,7 +65,7 @@ public class FindUsersActivity extends AppCompatActivity {
                     contactPhoneNum = ISO + contactPhoneNum;
 
             // To prevent multiple entries to be displayed
-            User user = new User(contactName, contactPhoneNum);
+            User user = new User("", contactName, contactPhoneNum);
             authContact(user);
         }
     }
@@ -78,12 +77,14 @@ public class FindUsersActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()) {
-                    if(uniqueContacts.contains(user.getPhoneNum()))
-                        return;
-                    uniqueContacts.add(user.getPhoneNum());
-                    userArrayList.add(user);
-                    Log.i(TAG, "Added user" + user.getPhoneNum());
-                    userListAdapter.notifyDataSetChanged();
+                    for(DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                        user.setUID(childSnapshot.getKey());
+                        if (uniqueContacts.contains(user.getPhoneNum()))
+                            return;
+                        uniqueContacts.add(user.getPhoneNum());
+                        userArrayList.add(user);
+                        userListAdapter.notifyDataSetChanged();
+                    }
                 }
             }
 

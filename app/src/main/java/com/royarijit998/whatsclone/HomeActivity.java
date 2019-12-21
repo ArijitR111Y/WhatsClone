@@ -1,6 +1,9 @@
 package com.royarijit998.whatsclone;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.content.Intent;
@@ -10,8 +13,22 @@ import android.view.View;
 import android.widget.Button;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.HashSet;
 
 public class HomeActivity extends AppCompatActivity {
+
+    private RecyclerView chatsRecyclerView;
+    private RecyclerView.Adapter chatsListAdapter;
+    private RecyclerView.LayoutManager chatListLayoutManager;
+    private ArrayList<ChatItem> chatArrayList;
+    private HashSet<String> uniqueIds;
 
     private Button findUsersBtn;
 
@@ -32,6 +49,48 @@ public class HomeActivity extends AppCompatActivity {
 
         getPermissions();
 
+
+        chatArrayList = new ArrayList<>();
+        uniqueIds = new HashSet<>();
+        getUserChat();
+
+        chatsRecyclerView = findViewById(R.id.chatsRecyclerView);
+        // For more seamless scrolling
+        chatsRecyclerView.setNestedScrollingEnabled(false);
+        chatsRecyclerView.setHasFixedSize(false);
+        chatListLayoutManager = new LinearLayoutManager(HomeActivity.this, LinearLayoutManager.VERTICAL, false);
+        chatsRecyclerView.setLayoutManager(chatListLayoutManager);
+        chatsListAdapter = new ChatListAdapter(chatArrayList);
+        chatsRecyclerView.setAdapter(chatsListAdapter);
+
+
+
+    }
+
+    public void getUserChat(){
+        DatabaseReference userChatDB = FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getUid()).child("chats");
+        userChatDB.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    for(DataSnapshot childSnapshot : dataSnapshot.getChildren()){
+                        if(uniqueIds.contains(childSnapshot.getKey())){
+                            continue;
+                        }
+                        ChatItem chat = new ChatItem(childSnapshot.getKey());
+                        chatArrayList.add(chat);
+                        uniqueIds.add(chat.getChatID());
+                        chatsListAdapter.notifyDataSetChanged();
+
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     public void getPermissions(){

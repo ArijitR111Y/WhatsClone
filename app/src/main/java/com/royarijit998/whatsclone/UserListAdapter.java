@@ -3,10 +3,14 @@ package com.royarijit998.whatsclone;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
@@ -31,18 +35,31 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserVi
     }
 
     @Override
-    public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull UserViewHolder holder, final int position) {
         holder.nameTextView.setText(userArrayList.get(position).getName());
         holder.phoneTextView.setText(userArrayList.get(position).getPhoneNum());
+
+        holder.itemLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String key = FirebaseDatabase.getInstance().getReference().child("Chats").push().getKey();
+
+                FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getUid()).child("chats").child(key).setValue(true);
+                FirebaseDatabase.getInstance().getReference().child("Users").child(userArrayList.get(position).getUID()).child("chats").child(key).setValue(true);
+            }
+        });
+
     }
 
     public class UserViewHolder extends RecyclerView.ViewHolder {
-        public TextView nameTextView, phoneTextView;
+        private TextView nameTextView, phoneTextView;
+        private LinearLayout itemLayout;
 
         public UserViewHolder(@NonNull View itemView) {
             super(itemView);
             nameTextView = itemView.findViewById(R.id.nameTextView);
             phoneTextView = itemView.findViewById(R.id.phoneTextView);
+            itemLayout = itemView.findViewById(R.id.itemLayout);
         }
     }
 
