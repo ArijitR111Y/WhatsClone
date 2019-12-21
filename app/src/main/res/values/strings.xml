@@ -10,4 +10,6 @@
     <string name="find_users">Find Users</string>
     <string name="name">Name</string>
     <string name="title">Title</string>
+    <string name="test_sender">Test Sender</string>
+    <string name="test_message">Test Message</string>
 </resources>

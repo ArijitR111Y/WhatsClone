@@ -1,9 +1,9 @@
 package com.royarijit998.whatsclone.Chats;
 
-public class ChatItem {
+public class Chat {
     private String chatID;
 
-    public ChatItem( String chatID) {
+    public Chat(String chatID) {
         this.chatID = chatID;
     }
 

@@ -13,9 +13,9 @@ import com.royarijit998.whatsclone.R;
 import java.util.ArrayList;
 
 public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ChatViewHolder> {
-    ArrayList<ChatItem> ChatArrayList;
+    ArrayList<Chat> ChatArrayList;
 
-    public ChatListAdapter(ArrayList<ChatItem> ChatArrayList) {
+    public ChatListAdapter(ArrayList<Chat> ChatArrayList) {
         this.ChatArrayList = ChatArrayList;
     }
 

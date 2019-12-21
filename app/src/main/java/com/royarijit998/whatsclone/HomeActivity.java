@@ -18,7 +18,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.royarijit998.whatsclone.Chats.ChatItem;
+import com.royarijit998.whatsclone.Chats.Chat;
 import com.royarijit998.whatsclone.Chats.ChatListAdapter;
 
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ public class HomeActivity extends AppCompatActivity {
     private RecyclerView chatsRecyclerView;
     private RecyclerView.Adapter chatsListAdapter;
     private RecyclerView.LayoutManager chatListLayoutManager;
-    private ArrayList<ChatItem> chatArrayList;
+    private ArrayList<Chat> chatArrayList;
     private HashSet<String> uniqueIds;
 
     private Button findUsersBtn;
@@ -79,7 +79,7 @@ public class HomeActivity extends AppCompatActivity {
                         if(uniqueIds.contains(childSnapshot.getKey())){
                             continue;
                         }
-                        ChatItem chat = new ChatItem(childSnapshot.getKey());
+                        Chat chat = new Chat(childSnapshot.getKey());
                         chatArrayList.add(chat);
                         uniqueIds.add(chat.getChatID());
                         chatsListAdapter.notifyDataSetChanged();
