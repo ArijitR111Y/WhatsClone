@@ -9,12 +9,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.royarijit998.whatsclone.R;
 
 import java.util.ArrayList;
 
 public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.MessageViewHolder> {
     ArrayList<Message> MessageArrayList;
+    String currUserId;
 
     public MessageListAdapter(ArrayList<Message> MessageArrayList) {
         this.MessageArrayList = MessageArrayList;
@@ -23,8 +25,9 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
     @NonNull
     @Override
     public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.chat_item, null, false);
+        View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.message_item, null, false);
         MessageViewHolder MessageViewHolder =  new MessageViewHolder(layoutView);
+        currUserId = FirebaseAuth.getInstance().getUid();
         return MessageViewHolder;
     }
 
@@ -35,14 +38,11 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull MessageViewHolder holder, final int position) {
-        holder.senderTextView.setText(MessageArrayList.get(position).getSenderID());
+        if(currUserId.equals(MessageArrayList.get(position).getSenderID()))
+            holder.senderTextView.setText("You");
+        else
+            holder.senderTextView.setText(MessageArrayList.get(position).getSenderID());
         holder.messageTextView.setText(MessageArrayList.get(position).getMessage());
-
-        holder.itemLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
-        });
 
     }
 

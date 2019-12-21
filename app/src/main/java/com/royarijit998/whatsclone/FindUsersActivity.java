@@ -78,14 +78,12 @@ public class FindUsersActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()) {
-                    for(DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
-                        user.setUID(childSnapshot.getKey());
-                        if (uniqueContacts.contains(user.getPhoneNum()))
-                            return;
-                        uniqueContacts.add(user.getPhoneNum());
-                        userArrayList.add(user);
-                        userListAdapter.notifyDataSetChanged();
-                    }
+                    user.setUID(dataSnapshot.getKey());
+                    if (uniqueContacts.contains(user.getPhoneNum()))
+                        return;
+                    uniqueContacts.add(user.getPhoneNum());
+                    userArrayList.add(user);
+                    userListAdapter.notifyDataSetChanged();
                 }
             }
 

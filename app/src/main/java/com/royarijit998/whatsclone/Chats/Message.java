@@ -3,7 +3,7 @@ package com.royarijit998.whatsclone.Chats;
 public class Message {
     private String MessageID, SenderID, message;
 
-    Message(String MessageID, String SenderID, String message){
+    public Message(String MessageID, String SenderID, String message){
         this.MessageID = MessageID;
         this.SenderID = SenderID;
         this.message = message;

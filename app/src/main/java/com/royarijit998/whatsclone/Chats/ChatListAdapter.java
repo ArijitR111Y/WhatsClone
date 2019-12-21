@@ -1,5 +1,7 @@
 package com.royarijit998.whatsclone.Chats;
 
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.royarijit998.whatsclone.ChatActivity;
 import com.royarijit998.whatsclone.R;
 
 import java.util.ArrayList;
@@ -39,6 +42,11 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ChatVi
         holder.itemLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), ChatActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("chatID", ChatArrayList.get(position).getChatID());
+                intent.putExtras(bundle);
+                v.getContext().startActivity(intent);
             }
         });
 

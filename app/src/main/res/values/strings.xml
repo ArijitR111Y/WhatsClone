@@ -12,4 +12,5 @@
     <string name="title">Title</string>
     <string name="test_sender">Test Sender</string>
     <string name="test_message">Test Message</string>
+    <string name="send">Send</string>
 </resources>
