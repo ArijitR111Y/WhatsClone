@@ -1,4 +1,4 @@
-package com.royarijit998.whatsclone;
+package com.royarijit998.whatsclone.Chats;
 
 public class ChatItem {
     private String chatID;

@@ -1,4 +1,4 @@
-package com.royarijit998.whatsclone;
+package com.royarijit998.whatsclone.Users;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
+import com.royarijit998.whatsclone.R;
 
 import java.util.ArrayList;
 
