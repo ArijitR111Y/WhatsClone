@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.util.Log;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -28,6 +29,7 @@ public class FindUsersActivity extends AppCompatActivity {
     private ArrayList<User> userArrayList;
     private String ISO;
     private HashSet<String> uniqueContacts;
+    private static final String TAG = "FindUsersActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,12 +80,18 @@ public class FindUsersActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()) {
-                    user.setUID(dataSnapshot.getKey());
-                    if (uniqueContacts.contains(user.getPhoneNum()))
+                    for(DataSnapshot childSnapshot : dataSnapshot.getChildren()){
+                        user.setUID(childSnapshot.getKey());
+                        Log.i(TAG, childSnapshot.getKey());
+                        if (uniqueContacts.contains(user.getPhoneNum()))
+                            return;
+                        uniqueContacts.add(user.getPhoneNum());
+                        userArrayList.add(user);
+                        userListAdapter.notifyDataSetChanged();
                         return;
-                    uniqueContacts.add(user.getPhoneNum());
-                    userArrayList.add(user);
-                    userListAdapter.notifyDataSetChanged();
+                    }
+
+
                 }
             }
 

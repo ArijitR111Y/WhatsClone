@@ -37,7 +37,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ChatVi
 
     @Override
     public void onBindViewHolder(@NonNull ChatViewHolder holder, final int position) {
-        holder.titleTextView.setText(ChatArrayList.get(position).getChatID());
+        holder.titleTextView.setText(ChatArrayList.get(position).getContactName());
 
         holder.itemLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -45,6 +45,7 @@ public class ChatListAdapter extends RecyclerView.Adapter<ChatListAdapter.ChatVi
                 Intent intent = new Intent(v.getContext(), ChatActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putString("chatID", ChatArrayList.get(position).getChatID());
+                bundle.putString("contactName", ChatArrayList.get(position).getContactName());
                 intent.putExtras(bundle);
                 v.getContext().startActivity(intent);
             }

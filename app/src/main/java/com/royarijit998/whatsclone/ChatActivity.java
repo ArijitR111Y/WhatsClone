@@ -30,7 +30,7 @@ public class ChatActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager messageListLayoutManager;
     private ArrayList<Message> messageArrayList;
     private Button sendBtn;
-    private String chatID;
+    private String chatID, contactName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +38,7 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat);
 
         chatID = getIntent().getExtras().getString("chatID");
+        contactName = getIntent().getExtras().getString("contactName");
 
         messageArrayList = new ArrayList<>();
         getChatMessages();
@@ -64,7 +65,7 @@ public class ChatActivity extends AppCompatActivity {
     public void sendMessage(){
         EditText sendMsgEditText = findViewById(R.id.sendMsgEditText);
         if(!sendMsgEditText.getText().toString().isEmpty()){
-            Message message = new Message(FirebaseDatabase.getInstance().getReference().child("Chats").child(chatID).push().getKey(), FirebaseAuth.getInstance().getUid(), sendMsgEditText.getText().toString());
+            Message message = new Message(FirebaseDatabase.getInstance().getReference().child("Chats").child(chatID).push().getKey(), FirebaseAuth.getInstance().getUid(), "You", sendMsgEditText.getText().toString());
             HashMap<String, String> messageMap = new HashMap<>();
             messageMap.put("SenderID", message.getSenderID());
             messageMap.put("message", message.getMessage());
@@ -86,7 +87,7 @@ public class ChatActivity extends AppCompatActivity {
                     if(dataSnapshot.child("SenderID").getValue() != null)
                         SenderID = dataSnapshot.child("SenderID").getValue().toString();
 
-                    Message msg = new Message(dataSnapshot.getKey(), SenderID, message);
+                    Message msg = new Message(dataSnapshot.getKey(), SenderID, contactName, message);
                     messageArrayList.add(msg);
                     messageListLayoutManager.scrollToPosition(messageArrayList.size()-1);
                     messageListAdapter.notifyDataSetChanged();

@@ -41,7 +41,7 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
         if(currUserId.equals(MessageArrayList.get(position).getSenderID()))
             holder.senderTextView.setText("You");
         else
-            holder.senderTextView.setText(MessageArrayList.get(position).getSenderID());
+            holder.senderTextView.setText(MessageArrayList.get(position).getSenderName());
         holder.messageTextView.setText(MessageArrayList.get(position).getMessage());
 
     }

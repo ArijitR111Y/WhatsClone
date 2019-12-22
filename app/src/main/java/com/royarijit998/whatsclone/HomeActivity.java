@@ -6,9 +6,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.view.View;
 import android.widget.Button;
 
@@ -17,6 +21,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.royarijit998.whatsclone.Chats.Chat;
 import com.royarijit998.whatsclone.Chats.ChatListAdapter;
@@ -79,7 +84,8 @@ public class HomeActivity extends AppCompatActivity {
                         if(uniqueIds.contains(childSnapshot.getKey())){
                             continue;
                         }
-                        Chat chat = new Chat(childSnapshot.getKey());
+                        String phone = childSnapshot.getValue().toString();
+                        Chat chat = new Chat(childSnapshot.getKey(), phone, getContactName(phone, getApplicationContext()));
                         chatArrayList.add(chat);
                         uniqueIds.add(chat.getChatID());
                         chatsListAdapter.notifyDataSetChanged();
@@ -109,5 +115,20 @@ public class HomeActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
         return;
+    }
+
+    public String getContactName(final String phoneNumber, Context context)
+    {
+        Uri uri=Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNumber));
+        String[] projection = new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME};
+        String contactName="";
+        Cursor cursor=context.getContentResolver().query(uri,projection,null,null,null);
+        if (cursor != null) {
+            if(cursor.moveToFirst()) {
+                contactName=cursor.getString(0);
+            }
+            cursor.close();
+        }
+        return contactName;
     }
 }
