@@ -13,4 +13,6 @@
     <string name="test_sender">Test Sender</string>
     <string name="test_message">Test Message</string>
     <string name="send">Send</string>
+    <string name="plus_sign">+</string>
+    <string name="send_a_message">Send a message..</string>
 </resources>

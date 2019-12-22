@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.ClipData;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -28,8 +29,16 @@ public class ChatActivity extends AppCompatActivity {
     private RecyclerView messageRecyclerView;
     private RecyclerView.Adapter messageListAdapter;
     private RecyclerView.LayoutManager messageListLayoutManager;
+
+    private RecyclerView mediaRecyclerView;
+    private RecyclerView.Adapter mediaListAdapter;
+    private RecyclerView.LayoutManager mediaListLayoutManager;
+
     private ArrayList<Message> messageArrayList;
+    private ArrayList<String> mediaURIArrayList;
+
     private Button sendBtn;
+    private Button addMediaBtn;
     private String chatID, contactName;
 
     @Override
@@ -41,9 +50,43 @@ public class ChatActivity extends AppCompatActivity {
         contactName = getIntent().getExtras().getString("contactName");
 
         messageArrayList = new ArrayList<>();
+        mediaURIArrayList = new ArrayList<>();
         getChatMessages();
 
+        initialiseMessageRecyclerView();
+        intialiseMediaRecycleView();
 
+        // -------Working with buttons-------
+        sendBtn = findViewById(R.id.sendBtn);
+        sendBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendMessage();
+            }
+        });
+
+        addMediaBtn = findViewById(R.id.addMediaBtn);
+        addMediaBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openGallery();
+            }
+        });
+        // ----------------------------------
+    }
+
+    private void intialiseMediaRecycleView() {
+        mediaRecyclerView = findViewById(R.id.mediaRecyclerView);
+        // For more seamless scrolling
+        mediaRecyclerView.setNestedScrollingEnabled(false);
+        mediaRecyclerView.setHasFixedSize(false);
+        mediaListLayoutManager = new LinearLayoutManager(ChatActivity.this, LinearLayoutManager.HORIZONTAL, false);
+        mediaRecyclerView.setLayoutManager(mediaListLayoutManager);
+        mediaListAdapter = new MediaListAdapter(getApplicationContext(), mediaURIArrayList);
+        mediaRecyclerView.setAdapter(mediaListAdapter);
+    }
+
+    private void initialiseMessageRecyclerView() {
         messageRecyclerView = findViewById(R.id.messageRecyclerView);
         // For more seamless scrolling
         messageRecyclerView.setNestedScrollingEnabled(false);
@@ -52,14 +95,6 @@ public class ChatActivity extends AppCompatActivity {
         messageRecyclerView.setLayoutManager(messageListLayoutManager);
         messageListAdapter = new MessageListAdapter(messageArrayList);
         messageRecyclerView.setAdapter(messageListAdapter);
-
-        sendBtn = findViewById(R.id.sendBtn);
-        sendBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendMessage();
-            }
-        });
     }
 
     public void sendMessage(){
@@ -96,24 +131,44 @@ public class ChatActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
 
             @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-            }
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {}
 
             @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
         });
+    }
+
+    int PICK_IMAGE_INTENT = 1;
+
+    private void openGallery() {
+        Intent mediaIntent = new Intent();
+        mediaIntent.setType("image/*");
+        mediaIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        mediaIntent.setAction(mediaIntent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(mediaIntent, "Select a picture to send.."), PICK_IMAGE_INTENT);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == RESULT_OK){
+            if(requestCode == PICK_IMAGE_INTENT){
+                if(data.getClipData() == null){
+                    mediaURIArrayList.add(data.getData().toString());
+                }
+                else{
+                    for(int i=0; i<data.getClipData().getItemCount(); i++){
+                        mediaURIArrayList.add(data.getClipData().getItemAt(i).toString());
+                    }
+                }
+                mediaListAdapter.notifyDataSetChanged();
+            }
+        }
     }
 }

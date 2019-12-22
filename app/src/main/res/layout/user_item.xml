@@ -4,7 +4,8 @@
     android:id="@+id/itemLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="?android:attr/selectableItemBackground">
 
 
     <TextView
@@ -14,8 +15,7 @@
         android:layout_marginTop="5dp"
         android:padding="10dp"
         android:text="@string/name"
-        android:textSize="18sp"
-        android:background="?android:attr/selectableItemBackground"/>
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/phoneTextView"
