@@ -1,4 +1,4 @@
-package com.royarijit998.whatsclone;
+package com.royarijit998.whatsclone.Chats;
 
 import android.content.Context;
 import android.net.Uri;
@@ -11,15 +11,16 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.royarijit998.whatsclone.R;
 
 import java.util.ArrayList;
 
 public class MediaListAdapter extends RecyclerView.Adapter<MediaListAdapter.MediaViewHolder> {
 
     private ArrayList<String> mediaURIArrayList;
-    Context context;
+    private Context context;
 
-    MediaListAdapter(Context context, ArrayList<String> mediaURIArrayList){
+    public MediaListAdapter(Context context, ArrayList<String> mediaURIArrayList){
         this.context = context;
         this.mediaURIArrayList = mediaURIArrayList;
     }

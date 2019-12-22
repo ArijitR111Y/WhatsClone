@@ -6,18 +6,24 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.ClipData;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.royarijit998.whatsclone.Chats.MediaListAdapter;
 import com.royarijit998.whatsclone.Chats.Message;
 import com.royarijit998.whatsclone.Chats.MessageListAdapter;
 
@@ -36,10 +42,14 @@ public class ChatActivity extends AppCompatActivity {
 
     private ArrayList<Message> messageArrayList;
     private ArrayList<String> mediaURIArrayList;
+    private ArrayList<String> mediaIDList;
 
     private Button sendBtn;
     private Button addMediaBtn;
+    private EditText sendMsgEditText;
     private String chatID, contactName;
+
+    private int totalMediaUpload;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +64,7 @@ public class ChatActivity extends AppCompatActivity {
         getChatMessages();
 
         initialiseMessageRecyclerView();
-        intialiseMediaRecycleView();
+        initialiseMediaRecycleView();
 
         // -------Working with buttons-------
         sendBtn = findViewById(R.id.sendBtn);
@@ -75,7 +85,7 @@ public class ChatActivity extends AppCompatActivity {
         // ----------------------------------
     }
 
-    private void intialiseMediaRecycleView() {
+    private void initialiseMediaRecycleView() {
         mediaRecyclerView = findViewById(R.id.mediaRecyclerView);
         // For more seamless scrolling
         mediaRecyclerView.setNestedScrollingEnabled(false);
@@ -97,16 +107,64 @@ public class ChatActivity extends AppCompatActivity {
         messageRecyclerView.setAdapter(messageListAdapter);
     }
 
-    public void sendMessage(){
-        EditText sendMsgEditText = findViewById(R.id.sendMsgEditText);
-        if(!sendMsgEditText.getText().toString().isEmpty()){
-            Message message = new Message(FirebaseDatabase.getInstance().getReference().child("Chats").child(chatID).push().getKey(), FirebaseAuth.getInstance().getUid(), "You", sendMsgEditText.getText().toString());
-            HashMap<String, String> messageMap = new HashMap<>();
-            messageMap.put("SenderID", message.getSenderID());
+    private void sendMessage(){
+        sendMsgEditText = findViewById(R.id.sendMsgEditText);
+        final HashMap<String, Object> messageMap = new HashMap<>();
+        final Message message = new Message(FirebaseDatabase.getInstance().getReference().child("Chats").child(chatID).push().getKey(), FirebaseAuth.getInstance().getUid(), "You");
+        messageMap.put("SenderID", message.getSenderID());
+
+        if(!sendMsgEditText.getText().toString().isEmpty()) {
+            message.setMessage(sendMsgEditText.getText().toString());
             messageMap.put("message", message.getMessage());
-            FirebaseDatabase.getInstance().getReference().child("Chats").child(chatID).child(message.getMessageID()).setValue(messageMap);
         }
+
+
+        if(!mediaURIArrayList.isEmpty()){
+            mediaIDList = new ArrayList<>();
+            totalMediaUpload = 0;
+            for (String mediaURI : mediaURIArrayList){
+                String mediaID = FirebaseDatabase.getInstance().getReference().child("Chats").child(chatID).child(message.getMessageID()).child("media").push().getKey();
+                mediaIDList.add(mediaID);
+                final StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("Chats").child(chatID).child(message.getMessageID()).child(mediaID);
+                final UploadTask uploadTask = storageReference.putFile(Uri.parse(mediaURI));
+                uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                messageMap.put("/media/" + mediaIDList.get(totalMediaUpload) + "/", uri.toString());
+
+                                totalMediaUpload++;
+                                if(totalMediaUpload == mediaIDList.size()){
+                                    updateDbWithMediaMessage(FirebaseDatabase.getInstance().getReference().child("Chats").child(chatID).child(message.getMessageID()), messageMap);
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+        }else if(!sendMsgEditText.getText().toString().isEmpty()){
+            updateDbWithMessage(FirebaseDatabase.getInstance().getReference().child("Chats").child(chatID).child(message.getMessageID()), messageMap);
+        }
+    }
+
+    private void updateDbWithMediaMessage(DatabaseReference dbRef, HashMap<String, Object> messageMap){
+        dbRef.updateChildren(messageMap);
         sendMsgEditText.setText(null);
+        mediaURIArrayList.clear();
+        mediaIDList.clear();
+        mediaListAdapter.notifyDataSetChanged();
+
+    }
+
+    private void updateDbWithMessage(DatabaseReference dbRef, HashMap<String, Object> messageMap){
+        dbRef.setValue(messageMap);
+        sendMsgEditText.setText(null);
+        mediaURIArrayList.clear();
+        mediaIDList.clear();
+        mediaListAdapter.notifyDataSetChanged();
+
     }
 
     public void getChatMessages(){
@@ -122,7 +180,8 @@ public class ChatActivity extends AppCompatActivity {
                     if(dataSnapshot.child("SenderID").getValue() != null)
                         SenderID = dataSnapshot.child("SenderID").getValue().toString();
 
-                    Message msg = new Message(dataSnapshot.getKey(), SenderID, contactName, message);
+                    Message msg = new Message(dataSnapshot.getKey(), SenderID, contactName);
+                    msg.setMessage(message);
                     messageArrayList.add(msg);
                     messageListLayoutManager.scrollToPosition(messageArrayList.size()-1);
                     messageListAdapter.notifyDataSetChanged();
