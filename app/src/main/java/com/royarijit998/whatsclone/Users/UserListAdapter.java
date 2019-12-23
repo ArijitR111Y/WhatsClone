@@ -1,6 +1,8 @@
 package com.royarijit998.whatsclone.Users;
 
-import android.util.Log;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,25 +13,27 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.royarijit998.whatsclone.ChatActivity;
 import com.royarijit998.whatsclone.R;
 
 import java.util.ArrayList;
 
 public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserViewHolder> {
+    Context context;
     DatabaseReference dbRef;
     FirebaseAuth firebaseAuth;
     ArrayList<User> userArrayList;
     String userMobNumber;
     private static final String TAG = "UserListAdapter";
 
-    public UserListAdapter(ArrayList<User> userArrayList) {
+    public UserListAdapter(Context context, ArrayList<User> userArrayList) {
+        this.context = context;
         this.userArrayList = userArrayList;
     }
 
@@ -70,22 +74,67 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.UserVi
         holder.itemLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String key = FirebaseDatabase.getInstance().getReference().child("Chats").push().getKey();
+                // Query for the all the children of the currentUser's chats
+                final DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference().child("Users").child(firebaseAuth.getUid());
+                dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.exists()){
+                            boolean hasFound = false;
+                            for(DataSnapshot chatSnapshot : dataSnapshot.child("chats").getChildren()){
+                                if(chatSnapshot.getValue().toString().equals(userArrayList.get(position).getPhoneNum())){
+                                    {
+                                        String contactName = userArrayList.get(position).getName();
+                                        String chatID = chatSnapshot.getKey();
+                                        startChatActivity(chatID, contactName);
+                                        hasFound = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            if(!hasFound){
+                                //---------If the user.getPhoneNum() is not a valid value for any of the chatID of the currentUser---------
+                                String key = FirebaseDatabase.getInstance().getReference().child("Chats").push().getKey();
 
-                User user = userArrayList.get(position);
-                Log.i(TAG, user.getUID() + " " + user.getPhoneNum());
-                Log.i(TAG, firebaseAuth.getUid() + " " + userMobNumber);
+                                User user = userArrayList.get(position);
 
-                dbRef.child(firebaseAuth.getUid())
-                        .child("chats").child(key)
-                        .setValue(user.getPhoneNum());
-                dbRef.child(user.getUID())
-                        .child("chats").child(key)
-                        .setValue(userMobNumber);
+                                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Users");
+                                databaseReference.child(firebaseAuth.getUid())
+                                        .child("chats").child(key)
+                                        .setValue(user.getPhoneNum());
+                                databaseReference.child(user.getUID())
+                                        .child("chats").child(key)
+                                        .setValue(userMobNumber);
+
+                                // Finally, create a new intent and send the chatID (key) and the contactName for the user
+                                startChatActivity(key, user.getName());
+                                //--------------------------------------------------------------------------------------------------------
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {}
+                });
+
+
+
+                //---------Else---------
+                // create a new intent with the existing chatID and the contactName for the user
+                //--------------------------------------------------------------------------------------------------------
 
             }
         });
 
+    }
+
+    private void startChatActivity(String chatID, String contactName) {
+        Intent intent = new Intent(context, ChatActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("chatID", chatID);
+        bundle.putString("contactName", contactName);
+        intent.putExtras(bundle);
+        context.startActivity(intent);
     }
 
     public class UserViewHolder extends RecyclerView.ViewHolder {

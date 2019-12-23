@@ -120,7 +120,7 @@ public class HomeActivity extends AppCompatActivity {
         return;
     }
 
-    public String getContactName(final String phoneNumber, Context context)
+    public static String getContactName(final String phoneNumber, Context context)
     {
         Uri uri=Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNumber));
         String[] projection = new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME};

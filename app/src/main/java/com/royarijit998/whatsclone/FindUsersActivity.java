@@ -45,7 +45,7 @@ public class FindUsersActivity extends AppCompatActivity {
         userList.setHasFixedSize(false);
         userListLayoutManager = new LinearLayoutManager(FindUsersActivity.this, LinearLayoutManager.VERTICAL, false);
         userList.setLayoutManager(userListLayoutManager);
-        userListAdapter = new UserListAdapter(userArrayList);
+        userListAdapter = new UserListAdapter(getApplicationContext(), userArrayList);
         userList.setAdapter(userListAdapter);
 
         getUsersFromContacts();

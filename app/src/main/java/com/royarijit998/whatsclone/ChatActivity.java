@@ -61,6 +61,7 @@ public class ChatActivity extends AppCompatActivity {
 
         messageArrayList = new ArrayList<>();
         mediaURIArrayList = new ArrayList<>();
+        mediaIDList = new ArrayList<>();
         getChatMessages();
 
         initialiseMessageRecyclerView();
@@ -120,7 +121,6 @@ public class ChatActivity extends AppCompatActivity {
 
 
         if(!mediaURIArrayList.isEmpty()){
-            mediaIDList = new ArrayList<>();
             totalMediaUpload = 0;
             for (String mediaURI : mediaURIArrayList){
                 String mediaID = FirebaseDatabase.getInstance().getReference().child("Chats").child(chatID).child(message.getMessageID()).child("media").push().getKey();

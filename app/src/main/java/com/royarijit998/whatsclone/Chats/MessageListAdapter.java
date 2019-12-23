@@ -48,7 +48,7 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
         if(!MessageArrayList.get(position).getMessage().isEmpty())
             holder.messageTextView.setText(MessageArrayList.get(position).getMessage());
         else
-            holder.messageTextView.setText("Media Received");
+            holder.messageTextView.setVisibility(View.GONE);
 
         if(MessageArrayList.get(holder.getAdapterPosition()).getUrlArrayList().isEmpty()){
             holder.viewMediaBtn.setVisibility(View.GONE);
