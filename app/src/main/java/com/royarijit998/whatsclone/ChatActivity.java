@@ -175,13 +175,22 @@ public class ChatActivity extends AppCompatActivity {
                     String message = "";
                     String SenderID = "";
 
+                    ArrayList<String> UrlArrayList = new ArrayList<>();
+
                     if(dataSnapshot.child("message").getValue() != null)
                         message = dataSnapshot.child("message").getValue().toString();
                     if(dataSnapshot.child("SenderID").getValue() != null)
                         SenderID = dataSnapshot.child("SenderID").getValue().toString();
 
+                    if(dataSnapshot.child("media").getChildrenCount() > 0){
+                        for(DataSnapshot childSnapshot : dataSnapshot.child("media").getChildren()){
+                            UrlArrayList.add(childSnapshot.getValue().toString());
+                        }
+                    }
+
                     Message msg = new Message(dataSnapshot.getKey(), SenderID, contactName);
                     msg.setMessage(message);
+                    msg.setUrlArrayList(UrlArrayList);
                     messageArrayList.add(msg);
                     messageListLayoutManager.scrollToPosition(messageArrayList.size()-1);
                     messageListAdapter.notifyDataSetChanged();

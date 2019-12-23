@@ -1,7 +1,10 @@
 package com.royarijit998.whatsclone.Chats;
 
+import java.util.ArrayList;
+
 public class Message {
     private String MessageID, SenderID, SenderName, message;
+    private ArrayList<String> UrlArrayList;
 
     public Message(String MessageID, String SenderID, String SenderName){
         this.MessageID = MessageID;
@@ -27,5 +30,13 @@ public class Message {
 
     public String getMessage() {
         return message;
+    }
+
+    public ArrayList<String> getUrlArrayList() {
+        return UrlArrayList;
+    }
+
+    public void setUrlArrayList(ArrayList<String> urlArrayList) {
+        UrlArrayList = urlArrayList;
     }
 }

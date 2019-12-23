@@ -32,5 +32,14 @@
         android:paddingBottom="10dp"
         android:text="@string/test_message" />
 
+    <Button
+        android:id="@+id/viewMediaBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="10dp"
+        android:text="@string/view_media" />
+
 
 </LinearLayout>
